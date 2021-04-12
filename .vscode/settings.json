@@ -1,0 +1,4 @@
+{
+    "jupyter.jupyterServerType": "local",
+    "python.pythonPath": "/Users/vincent/.pyenv/versions/torch_3.6.3/bin/python"
+}

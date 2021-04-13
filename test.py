@@ -37,12 +37,14 @@ def test():
 
 
 if __name__ == '__main__':
-    gymenv = gym.make('Atlantis-v0')
+    gymenv = gym.make('Atlantis-v0') # state (210,160,3) 图片， action 离散的 4
     for i_episode in range(20):
         observation = gymenv.reset()
+        print('state:', observation)
         for t in range(100):
             gymenv.render()
-            # print(observation)
+            print(t)
+            actions = gymenv.action_space
             action = gymenv.action_space.sample()
             observation, reward, done, info = gymenv.step(action)
             if done:

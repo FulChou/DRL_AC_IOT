@@ -12,6 +12,7 @@ from flask import Flask, app
 from flask.globals import request
 from a2c_train import get_status_return_model_parameters
 from a2c_train import a2c_env_param
+from atari_tran import atari_state_model_params
 from test import test
 import json
 app = Flask(__name__)
@@ -20,6 +21,13 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'hellollll'
+
+@app.route('/atari/ac', methods=['POST'])
+def atari_status_model():
+    data = json.loads(request.data)
+    atari_state_model_params(data)
+    return 'model parameters'
+    
 
 
 @app.route('/get_a2c_env_param')
@@ -31,8 +39,8 @@ def get_a2c_env_param():
 def sendStatus():
     # print(request.data)
     data = request.data
-    with open('status.txt', 'w+') as f:
-        f.write(str(data))
+    # with open('status.txt', 'w+') as f:
+    #     f.write(str(data))
     data = json.loads(data)
     parameters = get_status_return_model_parameters(status=data)
     return json.dumps(parameters)

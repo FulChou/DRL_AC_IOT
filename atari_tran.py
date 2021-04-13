@@ -113,6 +113,40 @@ def collect_frames(n_frames, action, frame_list=[]):
     return np.concatenate(frame_list, axis=2), reward, done
 
 
+# 不需要与环境进行交互，直接拿到 数据计算 loss ，更新模型即可：
+def atari_state_model_params(data):
+
+    states = data['states']
+    # print(states,type(states))
+    for i in range(len(states)):
+        state = np.array(states[i])
+    # TODO : 将 state 带入 model，按照网络参数更新模型计算的数据，然后update 模型,然后将模型参数回传
+    # for i_episode in range(1, N_episodes + 1):
+    #     state = env.reset()
+    #     state = Image.fromarray(state)
+    #     state = np.array(state.resize(size, Image.ANTIALIAS), dtype=np.float32) # 图像转换:
+    #     if n_frames > 1: # 帧数 > 1
+    #         state, reward, done = collect_frames(n_frames - 1, np.random.randint(
+    #             env.action_space.n), frame_list=[state])
+    #     else:
+    #         done = False
+    #     t = 0
+    #     while not done  and t < 10000:
+    #         t += 1
+    #         action = select_action(model, state)
+    #         state, reward, done = collect_frames(n_frames, action, frame_list=[])
+    #         model.episode_rewards.append(reward)
+    #         if render:
+    #             env.render()
+    #     # 更新对应的 值就行了，
+    #     # update_episode_status()
+    #     finish_episode()
+    #     running_time = running_time * 0.99 + t * 0.01
+    #     if i_episode % log_interval == 0:
+    #         print('Episode {}\tLast Length: {:5d}\tAverage length: {:.2f}'.format(
+    #             i_episode, t, running_time
+    #         ))
+
 
 def main():
     running_time = 0
@@ -133,6 +167,7 @@ def main():
             model.episode_rewards.append(reward)
             if render:
                 env.render()
+
         finish_episode()
         running_time = running_time * 0.99 + t * 0.01
         if i_episode % log_interval == 0:

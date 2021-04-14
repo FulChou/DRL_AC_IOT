@@ -25,8 +25,7 @@ def hello_world():
 @app.route('/atari/ac', methods=['POST'])
 def atari_status_model():
     data = json.loads(request.data)
-    atari_state_model_params(data)
-    return 'model parameters'
+    return atari_state_model_params(data)
     
 
 

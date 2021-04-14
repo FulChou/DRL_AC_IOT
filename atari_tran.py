@@ -6,6 +6,7 @@ LastEditTime: 2021-04-10 14:27:15
 FilePath: /RL-Adventure-2/atari.py
 Description: What this document does
 '''
+from time import time
 import gym
 import numpy as np
 from itertools import count
@@ -15,11 +16,14 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 import torch
+from torch.distributions.transforms import StackTransform
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
 from torchsummary import summary
+import json
+import time
 
 render = True
 n_frames = 1
@@ -68,11 +72,12 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 eps = np.finfo(np.float32).eps.item() # 非负最小值
 # summary(model,input_size=(3,82,82))
 
-def select_action(actor_critic, state):
-    state = torch.from_numpy(state).permute(2, 0, 1).unsqueeze(0).to(device)
+def predict(actor_critic, state, new_probs, action):
+    state = torch.from_numpy(state).permute(2, 0, 1).unsqueeze(0).float().to(device)
     probs, critic_value = actor_critic(state)
+    probs.data = torch.Tensor(new_probs)
     m = Categorical(probs)
-    action = m.sample()
+    action = torch.Tensor([action])
     actor_critic.episode_actions.append(SavedAction(m.log_prob(action), critic_value))
     return action.item()
 
@@ -115,12 +120,26 @@ def collect_frames(n_frames, action, frame_list=[]):
 
 # 不需要与环境进行交互，直接拿到 数据计算 loss ，更新模型即可：
 def atari_state_model_params(data):
-
+    start = time.time()
+    probs_list = data['probs_list']
     states = data['states']
-    # print(states,type(states))
+    actions = data['actions']
+    # rewards = []
+    # action_value_pairs = data['action_value_pairs']
+    # print(len(probs_list),len(states), len(actions) )
     for i in range(len(states)):
         state = np.array(states[i])
-    # TODO : 将 state 带入 model，按照网络参数更新模型计算的数据，然后update 模型,然后将模型参数回传
+        action = predict(model,state,probs_list[i],actions[i])
+    model.episode_rewards = data['action_rewards']
+    finish_episode()
+    # print(model.state_dict())
+    res = {k:v.tolist() for k, v in model.state_dict().items()}
+    end = time.time()
+    print('episode train time: {}'.format(end-start))
+    return json.dumps(res)
+
+    # TODO : 将 state 带入 model，按照网络参数更新模型计算的数据，然后 update模型,然后将模型参数回传
+
     # for i_episode in range(1, N_episodes + 1):
     #     state = env.reset()
     #     state = Image.fromarray(state)

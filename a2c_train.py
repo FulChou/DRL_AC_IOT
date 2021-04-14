@@ -138,8 +138,8 @@ critic = Critic(num_inputs, num_outputs, hidden_size,
                 reduce_factor, up_factor).to(device)
 optimizer = optim.Adam(actor.parameters(), lr=lr)
 optimizer2 = optim.Adam(critic.parameters(), lr=lr)
-summary(actor, input_size=(1,4))
-summary(critic, input_size=(1,4))
+# summary(actor, input_size=(1,4))
+# summary(critic, input_size=(1,4))
 
 def get_status_return_model_parameters(status):
     states = dict2list(status['states'])

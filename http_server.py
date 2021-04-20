@@ -12,8 +12,11 @@ from flask import Flask, app
 from flask.globals import request
 from a2c_train import get_status_return_model_parameters
 from a2c_train import a2c_env_param
+from gae_tran import gae_env_param
+from gae_tran import gae_update_model
 from atari_tran import atari_state_model_params
-from test import test
+from ddpg_train import ddpg_policy_init
+# from test import test
 import json
 app = Flask(__name__)
 
@@ -26,22 +29,32 @@ def hello_world():
 def atari_status_model():
     data = json.loads(request.data)
     return atari_state_model_params(data)
-    
-
 
 @app.route('/get_a2c_env_param')
 def get_a2c_env_param():
     return json.dumps(a2c_env_param)
 
-
 @app.route('/sendStatus', methods=['POST'])
 def sendStatus():
-    # print(request.data)
     data = request.data
-    # with open('status.txt', 'w+') as f:
-    #     f.write(str(data))
     data = json.loads(data)
     parameters = get_status_return_model_parameters(status=data)
+    return json.dumps(parameters)
+
+@app.route('/get_gae_env_param')
+def get_gae_env_param():
+    return json.dumps(gae_env_param)
+
+@app.route('/gae_update_model', methods=['POST'])
+def _():
+    data = request.data
+    data = json.loads(data)
+    parameters = gae_update_model(status=data)
+    return json.dumps(parameters)
+
+@app.route('/ddpg_policy_init', methods=['GET'])
+def _():
+    parameters = ddpg_policy_init()
     return json.dumps(parameters)
 
 

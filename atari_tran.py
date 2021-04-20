@@ -75,9 +75,9 @@ eps = np.finfo(np.float32).eps.item() # 非负最小值
 def predict(actor_critic, state, new_probs, action):
     state = torch.from_numpy(state).permute(2, 0, 1).unsqueeze(0).float().to(device)
     probs, critic_value = actor_critic(state)
-    probs.data = torch.Tensor(new_probs)
+    probs.data = torch.Tensor(new_probs).to(device)
     m = Categorical(probs)
-    action = torch.Tensor([action])
+    action = torch.Tensor([action]).to(device)
     actor_critic.episode_actions.append(SavedAction(m.log_prob(action), critic_value))
     return action.item()
 
@@ -124,10 +124,7 @@ def atari_state_model_params(data):
     probs_list = data['probs_list']
     states = data['states']
     actions = data['actions']
-    # rewards = []
-    # action_value_pairs = data['action_value_pairs']
-    # print(len(probs_list),len(states), len(actions) )
-    for i in range(len(states)):
+    for i in range(len(probs_list)):
         state = np.array(states[i])
         action = predict(model,state,probs_list[i],actions[i])
     model.episode_rewards = data['action_rewards']

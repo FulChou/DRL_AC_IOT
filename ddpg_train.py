@@ -121,8 +121,8 @@ class PolicyNetwork(nn.Module):
         state  = torch.FloatTensor(state).unsqueeze(0).to(device)
         action = self.forward(state)
         return action.detach().cpu().numpy()[0, 0]
-
-def ddpg_update(batch_size, 
+# test for  
+def ddpg_update(batch_size=128,
            gamma = 0.99,
            min_value=-np.inf,
            max_value=np.inf,
@@ -204,36 +204,9 @@ frame_idx   = 0
 rewards     = []
 batch_size  = 128
 
-# while frame_idx < max_frames:
-#     state = env.reset()
-#     ou_noise.reset()
-#     episode_reward = 0
-    
-#     for step in range(max_steps):
-#         # action = policy_net.get_action(state)
-#         # action = ou_noise.get_action(action, step)
-#         # next_state, reward, done, _ = env.step(action)
-#         # replay_buffer.push(state, action, reward, next_state, done)
-
-#         if len(replay_buffer) > batch_size:
-#             ddpg_update(batch_size)
-        
-#         state = next_state
-#         episode_reward += reward
-#         frame_idx += 1
-        
-#         if frame_idx % max(1000, max_steps + 1) == 0:
-#             plot(frame_idx, rewards)
-        
-#         if done:
-#             break
-    
-#     rewards.append(episode_reward)
-
-
-def ddpg_policy_init():
+def ddpg_policy_update():
     paramters_dict = policy_net.state_dict()
     paramters_dict = {
-        k:v.data.tolist() for k,v in paramters_dict
+        k:v.data.tolist() for k,v in paramters_dict.items()
     }
     return paramters_dict

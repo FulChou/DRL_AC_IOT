@@ -3,7 +3,6 @@ import math
 import random
 import gym
 import numpy as np
-
 import torch
 from torch import tensor
 import torch.nn as nn
@@ -18,7 +17,7 @@ from torchsummary import summary
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-
+# 新建 环境
 def make_env():  # why?
     def _thunk():
         env = gym.make(env_name)
@@ -38,7 +37,6 @@ class Actor(nn.Module):
             nn.Linear(hidden_size // reduce_factor, num_outputs),
             nn.Softmax(dim=1),
         )
-
     def forward(self, x):
         probs = self.actor(x)
         dist = Categorical(probs)
@@ -46,7 +44,7 @@ class Actor(nn.Module):
 
 
 class Critic(nn.Module):
-    def __init__(self,  num_inputs, num_outputs, hidden_size, reduce_factor, up_factor, std=0.0):
+    def __init__(self,  num_inputs, num_outputs, hidden_size, up_factor, std=0.0):
         super(Critic, self).__init__()
         self.critic = nn.Sequential(
             nn.Linear(num_inputs, hidden_size*up_factor),
@@ -66,7 +64,6 @@ def plot(frame_idx, rewards):
     plt.subplot(131)
     plt.title('frame %s. reward: %s' % (frame_idx, rewards[-1]))
     plt.plot(rewards)
-    # plt.savefig('frame %s. reward: %s.jpg' % (frame_idx, rewards[-1]))
     plt.show()
 
 
@@ -112,7 +109,7 @@ a2c_env_param = {
     'hidden_size': 64,
     'lr': 1e-3,
     'num_steps': 5,
-    'reduce_factor': 1,
+    'reduce_factor': 4,
     'up_factor': 2,
     'stop_max': 3,
     'target': 195,

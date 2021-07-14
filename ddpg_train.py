@@ -99,9 +99,9 @@ class ValueNetwork(nn.Module):
         self.linear3.bias.data.uniform_(-init_w, init_w)
 
     def forward(self, state, action):
-        print('forward:')
-        print(state.shape)
-        print(action.shape)
+        # print('forward:')
+        # print(state.shape)
+        # print(action.shape)
         x = torch.cat([state, action], -1)
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
@@ -186,10 +186,10 @@ action_dim = env.action_space.shape[0]
 hidden_dim = 256
 
 value_net = ValueNetwork(state_dim, action_dim, hidden_dim).to(device)
-policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim).to(device)
+policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim//2).to(device)
 
 target_value_net = ValueNetwork(state_dim, action_dim, hidden_dim).to(device)
-target_policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim).to(device)
+target_policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim//2).to(device)
 
 for target_param, param in zip(target_value_net.parameters(), value_net.parameters()):
     target_param.data.copy_(param.data)
@@ -212,8 +212,7 @@ batch_size = 128
 
 summary(value_net, input_size=(1, state_dim), action_size=(1, action_dim))
 summary(policy_net, input_size=(1, state_dim))
-summary(target_value_net, input_size=(
-    1, state_dim), action_size=(1, action_dim))
+summary(target_value_net, input_size=(1, state_dim), action_size=(1, action_dim))
 summary(target_policy_net, input_size=(1, state_dim))
 
 
